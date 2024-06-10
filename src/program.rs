@@ -28,6 +28,18 @@ impl Program {
     }
 
     pub fn eval(&self, mut to_decipher: String) -> String {
-        todo!()
+        let mut answer = String::new();
+
+        while !to_decipher.is_empty() {
+            for (key, value) in self.instr.iter() {
+                if let Some((_, suff)) = to_decipher.split_once(key.as_str()) {
+                    answer.push_str(value);
+                    to_decipher = suff.to_string();
+                    break;
+                }
+            }
+        }
+
+        answer
     }
 }
