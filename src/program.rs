@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub enum Mode {
     Compress,
     Decompress,
@@ -82,6 +84,33 @@ impl Program {
 
         answer
     }
+}
+
+
+fn read_words() -> HashMap<String, u32> {
+    let input = std::fs::read_to_string("tables_mots").unwrap();
+
+    let mut hash = HashMap::new();
+
+    let mut line_iter = input.lines();
+
+    while let Some(word) = line_iter.next() {
+        if word.is_empty() {
+            break;
+        }
+
+        if let Some(value) = line_iter.next() {
+            if value.is_empty() {
+                break;
+            }
+
+            hash.insert(word.to_string(), value.parse::<u32>().unwrap() + 10000);
+        } else {
+            break;
+        }
+    }
+
+    hash
 }
 
 #[cfg(test)]
