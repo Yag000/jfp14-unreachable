@@ -80,10 +80,10 @@ mod tests {
     fn basics() {
         let v = vec![
             ('0'.to_string(), "abra".to_string()),
-            ("1".to_string(), "cad".to_string()),
+            ("00".to_string(), "cad".to_string()),
         ];
         let expected = vec![
-            ("1".to_string(), "cad".to_string()),
+            ("00".to_string(), "cad".to_string()),
             ('0'.to_string(), "abra".to_string()),
         ];
 
