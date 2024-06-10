@@ -97,6 +97,8 @@ impl Program {
 
 #[cfg(test)]
 mod tests {
+    use crate::program::Mode;
+
     use super::Program;
 
     #[test]
@@ -110,8 +112,8 @@ mod tests {
             ('0'.to_string(), "abra".to_string()),
         ];
 
-        let p1 = Program::new(v);
-        let p2 = Program::new(expected);
+        let p1 = Program::new(v, Mode::Decompress);
+        let p2 = Program::new(expected, Mode::Decompress);
 
         assert_eq!(p1.instr, p2.instr);
     }
