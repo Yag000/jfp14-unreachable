@@ -27,7 +27,7 @@ impl Program {
         });
     }
 
-    pub fn eval(to_decipher: String) -> String {
+    pub fn eval(&self, mut to_decipher: String) -> String {
         todo!()
     }
 }
