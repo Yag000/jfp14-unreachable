@@ -1,5 +1,5 @@
 pub struct Program {
-    instr: Vec<(String, String)>,
+    pub instr: Vec<(String, String)>,
 }
 
 impl Program {
@@ -14,7 +14,7 @@ impl Program {
         self.instr.sort_by(|a, b| b.0.len().cmp(&a.0.len()))
     }
 
-    fn normalize_rhs(&mut self, rhs: String) -> String {
+    fn normalize_rhs(&self, rhs: String) -> String {
         let mut ans = "".to_string();
 
         let bytes_rhs: Vec<char> = rhs
@@ -60,6 +60,7 @@ impl Program {
         while !to_decipher.is_empty() {
             for (key, value) in self.instr.iter() {
                 if let Some(suff) = to_decipher.strip_prefix(key.as_str()) {
+                    // let s = self.normalize_rhs(value.to_string());
                     answer.push_str(value);
                     to_decipher = suff.to_string();
                     break;
