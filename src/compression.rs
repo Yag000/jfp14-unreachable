@@ -46,25 +46,26 @@ impl Node {
         }
     }
 
-    pub fn new_leaf(c: char) -> Self {
+    pub fn new_leaf(c: String) -> Self {
         Node {
-            leaf: Some(c.to_string()),
+            leaf: Some(c),
             left: None,
             right: None,
         }
     }
 }
 
-fn count_occ(s: &String) -> HashMap<char, i32> {
-    let mut hash: HashMap<char, i32> = HashMap::new();
+fn count_occ(s: &String) -> HashMap<String, i32> {
+    let mut hash: HashMap<String, i32> = HashMap::new();
 
     s.chars().for_each(|c| {
-        match hash.get_mut(&c) {
+        let cs = c.to_string();
+        match hash.get_mut(&cs) {
             Some(v) => {
                 *v += 1;
             }
             None => {
-                hash.insert(c, 1);
+                hash.insert(cs, 1);
             }
         };
     });
@@ -72,10 +73,10 @@ fn count_occ(s: &String) -> HashMap<char, i32> {
     hash
 }
 
-fn hash_to_huffman_tree(hash: HashMap<char, i32>) -> Node {
+fn hash_to_huffman_tree(hash: HashMap<String, i32>) -> Node {
     let mut heap = BinaryHeap::new();
     hash.iter()
-        .for_each(|(c, p)| heap.push(PriorityElement::new(*p, Node::new_leaf(*c))));
+        .for_each(|(c, p)| heap.push(PriorityElement::new(*p, Node::new_leaf(c.to_string()))));
 
     while heap.len() > 1 {
         let fst = heap.pop().unwrap();
@@ -150,12 +151,12 @@ mod test {
     #[test]
     fn count() {
         let hash = count_occ(&String::from("bcaadddccacacac"));
-        assert_eq!(hash.get(&'a'), Some(&5));
-        assert_eq!(hash.get(&'b'), Some(&1));
-        assert_eq!(hash.get(&'c'), Some(&6));
-        assert_eq!(hash.get(&'d'), Some(&3));
+        assert_eq!(hash.get("a"), Some(&5));
+        assert_eq!(hash.get("b"), Some(&1));
+        assert_eq!(hash.get("c"), Some(&6));
+        assert_eq!(hash.get("d"), Some(&3));
 
-        assert_eq!(hash.get(&'z'), None);
+        assert_eq!(hash.get("z"), None);
     }
 
     #[test]
