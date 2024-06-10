@@ -1,13 +1,5 @@
-
-
-
 pub struct Program {
-    instr : Vec<(String, String) >,
+    instr: Vec<(String, String)>,
 }
 
-
-impl Program{
-
-}
-
-
+impl Program {}
