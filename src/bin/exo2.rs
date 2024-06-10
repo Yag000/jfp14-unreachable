@@ -9,12 +9,12 @@ fn decompress(path: String) -> String {
 
     let mut intrs: Vec<(String, String)> = Vec::new();
 
-    while let Some(l) = line_iter.next() {
+    for l in line_iter.by_ref() {
         if l.is_empty() {
             break;
         }
 
-        let (left, right) = l.split_once("=").unwrap();
+        let (left, right) = l.split_once('=').unwrap();
         intrs.push((left.to_string(), right.to_string()));
     }
 

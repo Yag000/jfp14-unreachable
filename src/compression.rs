@@ -41,6 +41,12 @@ impl PartialOrd for PriorityElement {
     }
 }
 
+impl Default for Node {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Node {
     pub fn new() -> Self {
         Node {
@@ -59,7 +65,7 @@ impl Node {
     }
 }
 
-fn count_occ(s: &String) -> HashMap<String, i32> {
+fn count_occ(s: &str) -> HashMap<String, i32> {
     let mut hash: HashMap<String, i32> = HashMap::new();
 
     for i in 0..s.len() / 4 + 1 {
@@ -90,7 +96,7 @@ fn count_occ(s: &String) -> HashMap<String, i32> {
 
 fn hash_to_huffman_tree(hash: HashMap<String, i32>) -> Node {
     if hash.len() == 1 {
-        let value: &String = hash.keys().nth(0).unwrap();
+        let value: &String = hash.keys().next().unwrap();
         return Node::new_leaf(value.to_string());
     }
 

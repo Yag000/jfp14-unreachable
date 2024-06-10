@@ -17,10 +17,6 @@ impl Program {
         };
         prog.sort(&mode);
 
-        match mode {
-            Mode::Decompress => prog.normalize_intrs(),
-            _ => (),
-        }
         prog
     }
 
@@ -64,13 +60,6 @@ impl Program {
         ans
     }
 
-    fn normalize_intrs(&mut self) {
-        for (pos, (key, rhs)) in self.instr.clone().iter().enumerate() {
-            let s = self.normalize_rhs(rhs.to_string());
-            self.instr[pos] = (key.to_string(), s);
-        }
-    }
-
     pub fn eval(&self, mut to_decipher: String) -> String {
         let mut answer = "".to_string();
 
@@ -81,7 +70,6 @@ impl Program {
                         Mode::Compress => answer.push_str(value),
                         Mode::Decompress => {
                             let s = self.normalize_rhs(value.to_string());
-
                             answer.push_str(s.as_str())
                         }
                     }
