@@ -14,15 +14,15 @@ fn decompress(path: String) -> String {
             break;
         }
 
-        let split: Vec<&str> = l.split("=").collect();
-        intrs.push((split[0].to_string(), split[1].to_string()));
+        let (left, right) = l.split_once("=").unwrap();
+        intrs.push((left.to_string(), right.to_string()));
     }
 
     let str_input = line_iter.next().unwrap();
 
-    let _prog = Program::new(intrs); 
+    let prog = Program::new(intrs);
 
-    return "tmp".to_string();
+    prog.eval(str_input.to_string())
 }
 
 fn main() {
