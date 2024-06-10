@@ -1,0 +1,7 @@
+0=cabbaaaac
+11=cabbaaaaccabbaaaaccabbaaaaccabbaaaacca
+100=a
+1011=c
+1010=b
+
+000000000000000010111010101000000101110101010

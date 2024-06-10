@@ -1,0 +1,6 @@
+1=hghfhghehghfhghdhghfhghehghfhghchghfhghehghfhghdhghfhghehghfhg
+00=h
+011=b
+010=a
+
+100011100010100011100

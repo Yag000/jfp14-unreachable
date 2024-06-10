@@ -1,7 +1,11 @@
+use core::str;
 use std::{
     cmp::Ordering,
-    collections::{BinaryHeap, HashMap},
+    collections::{BinaryHeap, HashMap, HashSet},
+    hash, i32,
 };
+
+use crate::program::{Mode, Program};
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct Node {
@@ -58,22 +62,38 @@ impl Node {
 fn count_occ(s: &String) -> HashMap<String, i32> {
     let mut hash: HashMap<String, i32> = HashMap::new();
 
-    s.chars().for_each(|c| {
-        let cs = c.to_string();
-        match hash.get_mut(&cs) {
-            Some(v) => {
-                *v += 1;
-            }
-            None => {
-                hash.insert(cs, 1);
-            }
-        };
-    });
+    for i in 0..s.len() / 4 + 1 {
+        let slice = s[..i].to_string();
+        let occ = s.split(&slice).collect::<Vec<&str>>().len() as i32;
+        let len = slice.len() as i32;
+
+        s.chars().for_each(|c| {
+            match hash.get_mut(&c.to_string()) {
+                Some(v) => {
+                    if *v >= 30 {
+                        *v = 30
+                    } else {
+                        *v += 1;
+                    }
+                }
+                None => {
+                    hash.insert(c.to_string(), 1);
+                }
+            };
+        });
+
+        hash.insert(slice, occ * len - 10);
+    }
 
     hash
 }
 
 fn hash_to_huffman_tree(hash: HashMap<String, i32>) -> Node {
+    if hash.len() == 1 {
+        let value: &String = hash.keys().nth(0).unwrap();
+        return Node::new_leaf(value.to_string());
+    }
+
     let mut heap = BinaryHeap::new();
     hash.iter()
         .for_each(|(c, p)| heap.push(PriorityElement::new(*p, Node::new_leaf(c.to_string()))));
@@ -116,6 +136,12 @@ fn parcours_huffman_tree(
 }
 
 pub fn eval_huffman_tree(node: Node) -> HashMap<String, String> {
+    if node.left.is_none() || node.right.is_none() {
+        let mut hash: HashMap<String, String> = HashMap::new();
+        hash.insert(node.leaf.unwrap(), "0".to_string());
+        return hash;
+    }
+
     let mut v = Vec::new();
     parcours_huffman_tree(&mut v, node, "");
     let mut hash = HashMap::new();
@@ -125,23 +151,103 @@ pub fn eval_huffman_tree(node: Node) -> HashMap<String, String> {
     hash
 }
 
-pub fn display(init: &String, result: HashMap<String, String>) -> String {
-    let code = result
+fn simplify_huff(code: Program) -> Program {
+    let mut hash = HashMap::new();
+
+    let max_len = code.instr.iter().map(|(_, b)| b.len()).max().unwrap();
+
+    for (value, key) in code.instr {
+        hash.insert(value, (max_len - key.len()) as i32);
+    }
+
+    let node = hash_to_huffman_tree(hash);
+    let binding = eval_huffman_tree(node);
+    let hash_: Vec<(&String, &String)> = binding.iter().collect();
+
+    let vec_ = hash_
+        .iter()
+        .map(|(a, b)| (a.to_string(), b.to_string()))
+        .collect();
+
+    Program::new(vec_, Mode::Compress)
+}
+
+pub struct Compressed {
+    compressed: String,
+    code: Program,
+}
+
+impl Compressed {
+    fn new(input: String, code: Program) -> Compressed {
+        Compressed {
+            compressed: input,
+            code,
+        }
+    }
+}
+
+pub fn compress(mut init: String, result: HashMap<String, String>) -> Compressed {
+    let tmp: Vec<(&String, &String)> = result.iter().collect();
+    let prog = Program::new(
+        tmp.iter()
+            .map(|(a, b)| (a.to_string(), b.to_string()))
+            .collect(),
+        Mode::Compress,
+    );
+
+    let mut init_copy = init.clone();
+
+    let mut hit_count: HashSet<(String, String)> = HashSet::new();
+
+    while !init.is_empty() {
+        for (key, value) in prog.instr.iter() {
+            if let Some(suff) = init.strip_prefix(key.as_str()) {
+                init = suff.to_string();
+                hit_count.insert((key.to_string(), value.to_string()));
+                break;
+            };
+        }
+    }
+
+    let hit: Vec<(String, String)> = hit_count
+        .iter()
+        .map(|(a, b)| (a.to_string(), b.to_string()))
+        .collect();
+
+    let program = Program::new(hit, Mode::Compress);
+
+    let new_prog = simplify_huff(program);
+
+    let mut answer = String::new();
+
+    while !init_copy.is_empty() {
+        for (key, value) in new_prog.instr.iter() {
+            if let Some(suff) = init_copy.strip_prefix(key.as_str()) {
+                answer.push_str(value);
+                init_copy = suff.to_string();
+                break;
+            };
+        }
+    }
+
+    Compressed::new(answer, new_prog)
+}
+pub fn display(init: String, result: HashMap<String, String>) -> String {
+    let compressed = compress(init, result);
+
+    let code = compressed
+        .code
+        .instr
         .iter()
         .fold(String::new(), |acc, (v, k)| format!("{acc}{k}={v}\n"));
 
-    let compressed = init
-        .chars()
-        .map(|c| result.get(&c.to_string()).unwrap())
-        .fold(String::new(), |acc, repr| format!("{acc}{repr}"));
-
-    format!("{code}\n{compressed}")
+    format!("{code}\n{}", compressed.compressed)
 }
 
 pub fn compress_word(word: String) -> String {
     let node = hash_to_huffman_tree(count_occ(&word));
     let hash = eval_huffman_tree(node);
-    display(&word, hash)
+    display(word, hash)
 }
 
 #[cfg(test)]

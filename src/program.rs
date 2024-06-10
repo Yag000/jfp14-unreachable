@@ -1,17 +1,29 @@
+pub enum Mode {
+    Compress,
+    Decompress,
+}
+
 pub struct Program {
     pub instr: Vec<(String, String)>,
 }
 
 impl Program {
-    pub fn new(instr: Vec<(String, String)>) -> Program {
+    pub fn new(instr: Vec<(String, String)>, mode: Mode) -> Program {
         let mut prog = Program { instr };
-        prog.sort();
-        prog.normalize_intrs();
+        prog.sort(&mode);
+
+        match mode {
+            Mode::Decompress => prog.normalize_intrs(),
+            _ => (),
+        }
         prog
     }
 
-    fn sort(&mut self) {
-        self.instr.sort_by(|a, b| b.0.len().cmp(&a.0.len()))
+    fn sort(&mut self, mode: &Mode) {
+        match mode {
+            Mode::Compress => self.instr.sort_by(|a, b| a.1.len().cmp(&b.1.len())),
+            Mode::Decompress => self.instr.sort_by(|a, b| b.0.len().cmp(&a.0.len())),
+        }
     }
 
     fn normalize_rhs(&self, rhs: String) -> String {

@@ -1,7 +1,7 @@
 use std::env::args;
 
 use jfp14_unreachable::compression::compress_word;
-use jfp14_unreachable::program::Program;
+use jfp14_unreachable::program::{Mode, Program};
 
 fn decompress(path: String) -> String {
     let input = std::fs::read_to_string(path).unwrap();
@@ -21,7 +21,7 @@ fn decompress(path: String) -> String {
 
     let str_input = line_iter.next().unwrap();
 
-    let prog = Program::new(intrs);
+    let prog = Program::new(intrs, Mode::Decompress);
 
     prog.eval(str_input.to_string())
 }
