@@ -1,11 +1,5 @@
-use std::cmp::Ordering;
-
 pub struct Program {
     instr: Vec<(String, String)>,
-}
-
-fn bin_to_u32(s: &str) -> u32 {
-    u32::from_str_radix(s, 2).unwrap()
 }
 
 impl Program {
@@ -17,19 +11,11 @@ impl Program {
     }
 
     fn sort(&mut self) {
-        self.instr.sort_by(|a, b| {
-            let a = bin_to_u32(&a.0);
-            let b = bin_to_u32(&b.0);
-            match a.cmp(&b) {
-                Ordering::Less => Ordering::Greater,
-                Ordering::Equal => Ordering::Equal,
-                Ordering::Greater => Ordering::Less,
-            }
-        });
+        self.instr.sort_by(|a, b| b.0.len().cmp(&a.0.len()))
     }
 
-    fn normalize_rhs(&mut self, rhs: String, key: Option<String>) -> String {
-        let mut ans = String::new();
+    fn normalize_rhs(&mut self, rhs: String) -> String {
+        let mut ans = "".to_string();
 
         let bytes_rhs: Vec<char> = rhs
             .as_bytes()
@@ -49,39 +35,27 @@ impl Program {
                     i += 1;
                 }
 
-                let eval = self.eval(tmp.clone());
-                if eval.contains("0") || eval.contains("1") {
-                    let norm = self.normalize_rhs(eval, Some(tmp));
-                    ans.push_str(norm.as_str());
-                } else {
-                    ans.push_str(eval.as_str());
-                }
+                let eval = self.eval(tmp);
+                let norm = self.normalize_rhs(eval);
+                ans.push_str(norm.as_str());
             } else {
                 ans.push(c);
                 i += 1;
             }
         }
 
-        if let Some(key) = key {
-            if let Some(pos) = self.instr.iter().position(|(a, _)| *a == key) {
-                self.instr[pos] = (key, ans.clone());
-            } else {
-                self.instr.push((key, ans.clone()));
-                self.sort();
-            }
-        }
         ans
     }
 
     fn normalize_intrs(&mut self) {
         for (pos, (key, rhs)) in self.instr.clone().iter().enumerate() {
-            let s = self.normalize_rhs(rhs.to_string(), None);
+            let s = self.normalize_rhs(rhs.to_string());
             self.instr[pos] = (key.to_string(), s);
         }
     }
 
     pub fn eval(&self, mut to_decipher: String) -> String {
-        let mut answer = String::new();
+        let mut answer = "".to_string();
 
         while !to_decipher.is_empty() {
             for (key, value) in self.instr.iter() {
