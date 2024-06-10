@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub enum Mode {
     Compress,
     Decompress,
@@ -5,11 +6,15 @@ pub enum Mode {
 
 pub struct Program {
     pub instr: Vec<(String, String)>,
+    mode: Mode,
 }
 
 impl Program {
     pub fn new(instr: Vec<(String, String)>, mode: Mode) -> Program {
-        let mut prog = Program { instr };
+        let mut prog = Program {
+            instr,
+            mode: mode.clone(),
+        };
         prog.sort(&mode);
 
         match mode {
@@ -72,8 +77,14 @@ impl Program {
         while !to_decipher.is_empty() {
             for (key, value) in self.instr.iter() {
                 if let Some(suff) = to_decipher.strip_prefix(key.as_str()) {
-                    // let s = self.normalize_rhs(value.to_string());
-                    answer.push_str(value);
+                    match &self.mode {
+                        Mode::Compress => answer.push_str(value),
+                        Mode::Decompress => {
+                            let s = self.normalize_rhs(value.to_string());
+
+                            answer.push_str(s.as_str())
+                        }
+                    }
                     to_decipher = suff.to_string();
                     break;
                 }
