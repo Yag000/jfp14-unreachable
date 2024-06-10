@@ -2,7 +2,7 @@ use core::str;
 use std::{
     cmp::Ordering,
     collections::{BinaryHeap, HashMap, HashSet},
-    hash, i32,
+    i32,
 };
 
 use crate::program::{Mode, Program};
@@ -250,7 +250,7 @@ pub fn compress_word(word: String) -> String {
     display(word, hash)
 }
 
-fn read_words() -> HashMap<String, u32> {
+fn _read_words() -> HashMap<String, u32> {
     let input = std::fs::read_to_string("tables_mots").unwrap();
 
     let mut hash = HashMap::new();
@@ -276,8 +276,8 @@ fn read_words() -> HashMap<String, u32> {
     hash
 }
 
-fn q4() {
-    let hash = read_words()
+fn _q4() {
+    let _hash = _read_words();
 }
 
 #[cfg(test)]
