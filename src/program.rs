@@ -9,7 +9,13 @@ fn bin_to_u32(s: &str) -> u32 {
 }
 
 impl Program {
-    pub fn sort(&mut self) {
+    pub fn new(instr: Vec<(String, String)>) -> Program {
+        let mut prog = Program { instr };
+        prog.sort();
+        prog
+    }
+
+    fn sort(&mut self) {
         self.instr.sort_by(|a, b| {
             let a = bin_to_u32(&a.0);
             let b = bin_to_u32(&b.0);

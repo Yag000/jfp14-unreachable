@@ -1,5 +1,7 @@
 use std::env::args;
 
+use jfp14_unreachable::program::Program;
+
 fn decompress(path: String) -> String {
     let input = std::fs::read_to_string(path).unwrap();
 
@@ -18,13 +20,9 @@ fn decompress(path: String) -> String {
 
     let str_input = line_iter.next().unwrap();
 
-    for (a, b) in intrs {
-        println!("{a}={b}");
-    }
+    let _prog = Program::new(intrs); 
 
-    println!("{str_input}");
-
-    return "y".to_string();
+    return "tmp".to_string();
 }
 
 fn main() {
