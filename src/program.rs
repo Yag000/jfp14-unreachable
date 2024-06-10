@@ -12,6 +12,7 @@ impl Program {
     pub fn new(instr: Vec<(String, String)>) -> Program {
         let mut prog = Program { instr };
         prog.sort();
+        prog.normalize_intrs();
         prog
     }
 
@@ -25,6 +26,58 @@ impl Program {
                 Ordering::Greater => Ordering::Less,
             }
         });
+    }
+
+    fn normalize_rhs(&mut self, rhs: String, key: Option<String>) -> String {
+        let mut ans = String::new();
+
+        let bytes_rhs: Vec<char> = rhs
+            .as_bytes()
+            .iter()
+            .map(|c| c.to_owned() as char)
+            .collect();
+
+        let mut i = 0;
+
+        while i < bytes_rhs.len() {
+            let c = bytes_rhs[i];
+            if c == '0' || c == '1' {
+                let mut tmp = String::new();
+
+                while i < bytes_rhs.len() && (bytes_rhs[i] == '0' || bytes_rhs[i] == '1') {
+                    tmp.push(bytes_rhs[i]);
+                    i += 1;
+                }
+
+                let eval = self.eval(tmp.clone());
+                if eval.contains("0") || eval.contains("1") {
+                    let norm = self.normalize_rhs(eval, Some(tmp));
+                    ans.push_str(norm.as_str());
+                } else {
+                    ans.push_str(eval.as_str());
+                }
+            } else {
+                ans.push(c);
+                i += 1;
+            }
+        }
+
+        if let Some(key) = key {
+            if let Some(pos) = self.instr.iter().position(|(a, _)| *a == key) {
+                self.instr[pos] = (key, ans.clone());
+            } else {
+                self.instr.push((key, ans.clone()));
+                self.sort();
+            }
+        }
+        ans
+    }
+
+    fn normalize_intrs(&mut self) {
+        for (pos, (key, rhs)) in self.instr.clone().iter().enumerate() {
+            let s = self.normalize_rhs(rhs.to_string(), None);
+            self.instr[pos] = (key.to_string(), s);
+        }
     }
 
     pub fn eval(&self, mut to_decipher: String) -> String {

@@ -26,5 +26,5 @@ fn decompress(path: String) -> String {
 }
 
 fn main() {
-    println!("{}", decompress(args().nth(1).unwrap()));
+    println!("{}", decompress(args().nth(1).unwrap()).len());
 }
