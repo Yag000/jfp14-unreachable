@@ -43,3 +43,25 @@ impl Program {
         answer
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Program;
+
+    #[test]
+    fn basics() {
+        let v = vec![
+            ('0'.to_string(), "abra".to_string()),
+            ("1".to_string(), "cad".to_string()),
+        ];
+        let expected = vec![
+            ("1".to_string(), "cad".to_string()),
+            ('0'.to_string(), "abra".to_string()),
+        ];
+
+        let p1 = Program::new(v);
+        let p2 = Program::new(expected);
+
+        assert_eq!(p1.instr, p2.instr);
+    }
+}
