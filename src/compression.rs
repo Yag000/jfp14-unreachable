@@ -250,6 +250,36 @@ pub fn compress_word(word: String) -> String {
     display(word, hash)
 }
 
+fn read_words() -> HashMap<String, u32> {
+    let input = std::fs::read_to_string("tables_mots").unwrap();
+
+    let mut hash = HashMap::new();
+
+    let mut line_iter = input.lines();
+
+    while let Some(word) = line_iter.next() {
+        if word.is_empty() {
+            break;
+        }
+
+        if let Some(value) = line_iter.next() {
+            if value.is_empty() {
+                break;
+            }
+
+            hash.insert(word.to_string(), value.parse::<u32>().unwrap() + 10000);
+        } else {
+            break;
+        }
+    }
+
+    hash
+}
+
+fn q4() {
+    let hash = read_words()
+}
+
 #[cfg(test)]
 mod test {
     use super::{count_occ, eval_huffman_tree, hash_to_huffman_tree};
