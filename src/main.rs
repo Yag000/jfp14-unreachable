@@ -1,5 +1,6 @@
 use std::env::args;
 
+use jfp14_unreachable::compression::compress_word;
 use jfp14_unreachable::program::Program;
 
 fn decompress(path: String) -> String {
@@ -25,6 +26,20 @@ fn decompress(path: String) -> String {
     prog.eval(str_input.to_string())
 }
 
+fn compress(path: String) -> String {
+    let input = std::fs::read_to_string(path).unwrap();
+
+    if let Some(l) = input.lines().next() {
+        if l.is_empty() {
+            unreachable!()
+        }
+
+        compress_word(l.to_string())
+    } else {
+        unreachable!()
+    }
+}
+
 fn main() {
-    println!("{}", decompress(args().nth(1).unwrap()));
+    println!("{}", compress(args().nth(1).unwrap()));
 }

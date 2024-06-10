@@ -137,7 +137,7 @@ pub fn display(init: &String, result: HashMap<String, String>) -> String {
     format!("{code}\n{compressed}")
 }
 
-pub fn compress(word: String) -> String {
+pub fn compress_word(word: String) -> String {
     let node = hash_to_huffman_tree(count_occ(&word));
     let hash = eval_huffman_tree(node);
     display(&word, hash)
